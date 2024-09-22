@@ -30,8 +30,8 @@
 #define Pin_vel_direcional 11
 #define Pin_vel_motor_traseiro 10
 
-#define VmaxD 127
-#define VmaxT 191
+#define VmaxD 125
+#define VmaxT 105
 
 int vel_motor_direcional = 127;
 int vel_motor_traseiro = 191;
@@ -54,7 +54,50 @@ int vel_motor_traseiro = 191;
 #define IN4 9
 
 char state;
+/*
+#include "pitches.h"
+int melody[] = {
+  NOTE_AS4, REST, NOTE_AS4, REST, NOTE_AS4, REST, NOTE_AS4, REST,
+  NOTE_AS4, NOTE_B4, NOTE_DS5,
+  NOTE_AS4, REST, NOTE_AS4, REST,
+  NOTE_AS4, NOTE_B4, NOTE_DS5,
+  NOTE_AS4, REST, NOTE_AS4, REST,
+  NOTE_AS4, NOTE_B4, NOTE_DS5,
+  NOTE_AS4, REST, NOTE_AS4, REST,
+  NOTE_AS4, NOTE_B4, NOTE_DS5,
+  NOTE_F5, REST, NOTE_F5, REST,
+  NOTE_GS5, NOTE_FS5, NOTE_F5,
+  NOTE_AS4, REST, NOTE_AS4, REST,
+  NOTE_GS5, NOTE_FS5, NOTE_F5,
+  NOTE_AS4, REST, NOTE_AS4, REST,
+  NOTE_AS4, NOTE_B4, NOTE_DS5,
+  NOTE_AS4, REST, NOTE_AS4, REST,
+  NOTE_AS4, NOTE_B4, NOTE_DS5,
+  NOTE_AS4, REST, NOTE_AS4, REST,
+  REST
+};
 
+int durations[] = {
+  4, 4, 4, 4, 4, 4, 4, 4,
+  3, 3, 4,
+  4, 4, 4, 4,
+  3, 3, 4,
+  4, 4, 4, 4,
+  3, 3, 4,
+  4, 4, 4, 4,
+  3, 3, 4,
+  4, 4, 4, 4,
+  3, 3, 4,
+  4, 4, 4, 4,
+  3, 3, 4,
+  4, 4, 4, 4,
+  3, 3, 4,
+  4, 4, 4, 4,
+  3, 3, 4,
+  4, 4, 4, 4,
+  1
+};
+*/
 void setup() {
   // Inicializa a comunicação serial em 9600 bits.
   Serial.begin(9600);
@@ -207,7 +250,25 @@ void loop() {
   else if (state == 'u') {   // Se o estado recebido for igual a 'u', Farol traseiro apaga.
   }
   else if (state == 'V') {   // Se o estado recebido for igual a 'V', liga buzina.
-  tone(buzina, 470);
+  
+  
+  int size = sizeof(durations) / sizeof(int);
+  tone(buzina,600);
+  
+  /*
+  for (int note = 0; note < size; note++) {
+    //to calculate the note duration, take one second divided by the note type.
+    //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
+    int duration = 1000 / durations[note];
+    tone(buzina, melody[note], duration);
+
+    //to distinguish the notes, set a minimum time between them.
+    //the note's duration + 30% seems to work well:
+    int pauseBetweenNotes = duration * 1.30;
+    delay(pauseBetweenNotes);
+
+  }
+  */
   }
   else if (state == 'v') {   // Se o estado recebido for igual a 'v', desliga buzina.
   noTone(buzina);
