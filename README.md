@@ -17,3 +17,12 @@ Código para controle de carrinho RC pela serial ( ou bluetooth ).
  - 1x [Ponte H]()
  - 1x [HC05](): Módulo Bluetooth
  - Fios
+### Ligações
+| arduino | Ponte H | Motor |
+| :---    | :---:   |  ---: |
+| 3       | IN1     |MA     |
+| 5       | IN2     |MA     |
+| 6       | IN3     |MB     |
+| 9       | IN4     |MB     |
+| 10      | ENA     |MA     |
+| 11      | ENB     |MB     |
