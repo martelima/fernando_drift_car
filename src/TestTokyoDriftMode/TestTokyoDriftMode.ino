@@ -100,6 +100,8 @@ uint32_t colors[] =
   COLOR_OFF
 };
 
+int note = 0;
+
 void setup()
 {
   // Inicia Buzzer
@@ -112,23 +114,25 @@ void setup()
 
 void loop()
 {
-  int size = sizeof(durations) / sizeof(int);
+   int size = (sizeof(durations) / sizeof(int)) - 1;
 
-  for (int note = 0; note < size; note++) {
-    //to calculate the note duration, take one second divided by the note type.
-    //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
-    int duration = 1000 / durations[note];
-    //tone(BUZZER_PIN, melody[note], duration);
-    pixels.setPixelColor(LED_LEFT,colors[note]);
-    pixels.setPixelColor(LED_RIGHT,colors[note]);
-    pixels.show();
+   note = (note < size)? note + 1: 0;
 
-    //to distinguish the notes, set a minimum time between them.
-    //the note's duration + 30% seems to work well:
-    int pauseBetweenNotes = duration;
-    delay(pauseBetweenNotes);
+   //to calculate the note duration, take one second divided by the note type.
+   //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
+   int duration = 1000 / durations[note];
+   tone(BUZZER_PIN, melody[note], duration);
 
-    //stop the tone playing:
-    noTone(BUZZER_PIN);
-  }
+   // Color Effects
+   pixels.setPixelColor(LED_LEFT,colors[note]);
+   pixels.setPixelColor(LED_RIGHT,colors[note]);
+   pixels.show();
+
+   //to distinguish the notes, set a minimum time between them.
+   //the note's duration + 30% seems to work well:
+   int pauseBetweenNotes = duration;
+   delay(pauseBetweenNotes);
+
+   //stop the tone playing:
+   noTone(BUZZER_PIN);
 }
