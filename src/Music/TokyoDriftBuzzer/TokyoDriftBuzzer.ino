@@ -4,7 +4,7 @@
 
 #include "pitches.h"
 
-#define BUZZER_PIN 9
+#define BUZZER_PIN 12
 
 int melody[] = {
   NOTE_AS4, REST, NOTE_AS4, REST, NOTE_AS4, REST, NOTE_AS4, REST,
@@ -61,11 +61,11 @@ void loop()
     //to calculate the note duration, take one second divided by the note type.
     //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
     int duration = 1000 / durations[note];
-    tone(BUZZER_PIN, melody[note], duration);
+    //tone(BUZZER_PIN, melody[note], duration);
 
     //to distinguish the notes, set a minimum time between them.
     //the note's duration + 30% seems to work well:
-    int pauseBetweenNotes = duration * 1.30;
+    int pauseBetweenNotes = duration;
     delay(pauseBetweenNotes);
 
     //stop the tone playing:
