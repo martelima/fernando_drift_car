@@ -7,23 +7,26 @@
 #define BUZZER_PIN 12
 
 int melody[] = {
-  NOTE_AS4, REST, NOTE_AS4, REST, NOTE_AS4, REST, NOTE_AS4, REST,
-  NOTE_AS4, NOTE_B4, NOTE_DS5,
-  NOTE_AS4, REST, NOTE_AS4, REST,
-  NOTE_AS4, NOTE_B4, NOTE_DS5,
-  NOTE_AS4, REST, NOTE_AS4, REST,
-  NOTE_AS4, NOTE_B4, NOTE_DS5,
-  NOTE_AS4, REST, NOTE_AS4, REST,
-  NOTE_AS4, NOTE_B4, NOTE_DS5,
-  NOTE_F5, REST, NOTE_F5, REST,
-  NOTE_GS5, NOTE_FS5, NOTE_F5,
-  NOTE_AS4, REST, NOTE_AS4, REST,
-  NOTE_GS5, NOTE_FS5, NOTE_F5,
-  NOTE_AS4, REST, NOTE_AS4, REST,
-  NOTE_AS4, NOTE_B4, NOTE_DS5,
-  NOTE_AS4, REST, NOTE_AS4, REST,
-  NOTE_AS4, NOTE_B4, NOTE_DS5,
-  NOTE_AS4, REST, NOTE_AS4, REST,
+  NOTE_AS4, REST,
+  NOTE_AS4, REST,
+  NOTE_AS4, REST,
+  NOTE_AS4, REST,
+  NOTE_AS4, NOTE_B4, NOTE_DS5, NOTE_AS4, REST,
+  NOTE_AS4, REST,
+  NOTE_AS4, NOTE_B4, NOTE_DS5, NOTE_AS4, REST,
+  NOTE_AS4, REST,
+  NOTE_AS4, NOTE_B4, NOTE_DS5, NOTE_AS4, REST,
+  NOTE_AS4, REST,
+  NOTE_AS4, NOTE_B4, NOTE_DS5, NOTE_F5, REST,
+  NOTE_F5, REST,
+  NOTE_GS5, NOTE_FS5, NOTE_F5, NOTE_AS4, REST,
+  NOTE_AS4, REST,
+  NOTE_GS5, NOTE_FS5, NOTE_F5, NOTE_AS4, REST,
+  NOTE_AS4, REST,
+  NOTE_AS4, NOTE_B4, NOTE_DS5, NOTE_F5, REST,
+  NOTE_F5, REST,
+  NOTE_AS4, NOTE_B4, NOTE_DS5, NOTE_F5, REST,
+  NOTE_F5, REST,
   REST
 };
 
@@ -61,7 +64,7 @@ void loop()
     //to calculate the note duration, take one second divided by the note type.
     //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
     int duration = 1000 / durations[note];
-    //tone(BUZZER_PIN, melody[note], duration);
+    tone(BUZZER_PIN, melody[note], duration);
 
     //to distinguish the notes, set a minimum time between them.
     //the note's duration + 30% seems to work well:
