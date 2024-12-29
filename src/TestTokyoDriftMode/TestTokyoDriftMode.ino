@@ -24,7 +24,7 @@ const uint32_t COLOR_WHITE = pixels.Color(150, 150, 150);
 const uint32_t COLOR_OFF = pixels.Color(0, 0, 0);
 
 
-int melody[] = {
+const int melody[] = {
   NOTE_AS4, REST,
   NOTE_AS4, REST,
   NOTE_AS4, REST,
@@ -50,7 +50,7 @@ int melody[] = {
   REST
 };
 
-int durations[] = {
+const int durations[] = {
   4, 4,
   4, 4,
   4, 4,
@@ -73,7 +73,7 @@ int durations[] = {
   1
 };
 
-uint32_t colors[] = 
+const uint32_t colors[] = 
 {
   COLOR_RED, COLOR_OFF,
   COLOR_RED, COLOR_OFF,
@@ -100,8 +100,6 @@ uint32_t colors[] =
   COLOR_OFF
 };
 
-int note = 0;
-
 void setup()
 {
   // Inicia Buzzer
@@ -114,14 +112,15 @@ void setup()
 
 void loop()
 {
-   int size = (sizeof(durations) / sizeof(int)) - 1;
+  const int size = (sizeof(durations) / sizeof(int)) - 1;
 
-   note = (note < size)? note + 1: 0;
+  static int note = 0;
+  note = (note < size)? note + 1: 0;
 
    //to calculate the note duration, take one second divided by the note type.
    //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
-   int duration = 1000 / durations[note];
-   tone(BUZZER_PIN, melody[note], duration);
+   const int duration = 1000 / durations[note];
+   //tone(BUZZER_PIN, melody[note], duration);
 
    // Color Effects
    pixels.setPixelColor(LED_LEFT,colors[note]);

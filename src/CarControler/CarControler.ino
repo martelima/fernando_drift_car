@@ -5,6 +5,24 @@
              ponte H, através do protocolo serial
 */
 
+#include "Arduino.h"
+#include <Adafruit_NeoPixel.h>
+
+const unsigned int PIN_LEDSTRIP = A0;
+const unsigned int NUM_LEDS = 2;
+const long TIME_DELAY = 1000;
+
+const uint16_t LED_LEFT = 0;
+const uint16_t LED_RIGHT = 1;
+
+Adafruit_NeoPixel pixels(NUM_LEDS, PIN_LEDSTRIP, NEO_BRG + NEO_KHZ800);
+
+const uint32_t COLOR_RED = pixels.Color(150, 0, 0);
+const uint32_t COLOR_GREEN = pixels.Color(0, 150, 0);
+const uint32_t COLOR_BLUE = pixels.Color(0, 0, 150);
+const uint32_t COLOR_WHITE = pixels.Color(150, 150, 150);
+const uint32_t COLOR_OFF = pixels.Color(0, 0, 0);
+
 /*
   Aqui definimos a velocidade máxima dos motores porem isso 
   depende tambem da fonte de energia que esteja utilizando 
@@ -35,22 +53,32 @@ int vel_motor_traseiro = 191;
 #define IN3 6
 #define IN4 9
 
-char state;
+enum CarDirection: int8_t {
+  DIRECTION_LEFT = -1,
+  DIRECTION_CENTER = 0,
+  DIRECTION_RIGHT = 1
+};
 
 void setup() {
   // Inicializa a comunicação serial em 9600 bits.
   Serial.begin(9600);
+
   pinMode(IN1,OUTPUT);
   pinMode(IN2,OUTPUT);
   pinMode(IN3,OUTPUT);
   pinMode(IN4,OUTPUT);
   pinMode(PIN_SPEED_MOTOR_BACK,OUTPUT);
   pinMode(PIN_SPEED_DIRECTION,OUTPUT);
+
+  pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
+  pixels.clear();
 }
 void loop() {
+  static char state = 'S';
+
   // Atribui os valores da leitura serial na variável "state"
   if (Serial.available() > 0) {
-    state  = Serial.read();
+    state = Serial.read();
     Serial.write(state);
   }
   /*
@@ -112,54 +140,63 @@ void loop() {
     digitalWrite(IN2,0);
     digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
     setCarSpeed(vel_motor_traseiro);
+    setLightsColor(COLOR_BLUE,COLOR_BLUE);
   }
   else if (state == 'G') {  // Se o estado recebido for igual a 'I', o carro se movimenta para Frente Esquerda.
     digitalWrite(IN1,1);
     digitalWrite(IN2,0);
     digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
     setCarSpeed(vel_motor_traseiro);
+    setLightsColor(COLOR_WHITE,COLOR_BLUE);
   }
   else if (state == 'I') {   // Se o estado recebido for igual a 'G', o carro se movimenta para Frente Direita.
     digitalWrite(IN1,0);
     digitalWrite(IN2,1);
     digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
     setCarSpeed(vel_motor_traseiro);
+    setLightsColor(COLOR_BLUE,COLOR_WHITE);
   }
   else if (state == 'B') { // Se o estado recebido for igual a 'B', o carro se movimenta para trás.
     digitalWrite(IN1,0);
     digitalWrite(IN2,0);
     digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
     setCarSpeed(-vel_motor_traseiro);
+    setLightsColor(COLOR_RED,COLOR_RED);
   }
   else if (state == 'H') {  // Se o estado recebido for igual a 'H', o carro se movimenta para Trás Esquerda.
     digitalWrite(IN1,1);
     digitalWrite(IN2,0);
     digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
     setCarSpeed(-vel_motor_traseiro);
+    setLightsColor(COLOR_WHITE,COLOR_RED);
   }
   else if (state == 'J') {  // Se o estado recebido for igual a 'J', o carro se movimenta para Trás Direita.
     digitalWrite(IN1,0);
     digitalWrite(IN2,1);
     digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
     setCarSpeed(-vel_motor_traseiro);
+    setLightsColor(COLOR_RED,COLOR_WHITE);
   }
   else if (state == 'L') {   // Se o estado recebido for igual a 'L', o carro se movimenta para esquerda.
     digitalWrite(IN1,1);
     digitalWrite(IN2,0);
     digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
-    setCarSpeed(vel_motor_traseiro);
+    setCarSpeed(0);
+    setLightsColor(COLOR_WHITE,COLOR_OFF);
   }
   else if (state == 'R') {   // Se o estado recebido for igual a 'R', o carro se movimenta para direita.
     digitalWrite(IN1,0);
     digitalWrite(IN2,1);
     digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
-    setCarSpeed(vel_motor_traseiro);
+    setCarSpeed(0);
+    setLightsColor(COLOR_OFF,COLOR_WHITE);
   }
   else if (state == 'S') {   // Se o estado recebido for igual a 'S', o carro permanece parado.
     digitalWrite(IN1,0);
     digitalWrite(IN2,0);
     digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
     setCarSpeed(0);
+    setLightsColor(COLOR_OFF,COLOR_OFF);
   }
   else if (state == 'W') {   // Se o estado recebido for igual a 'W', Farol dianteiro acende.
   }
@@ -181,7 +218,10 @@ void loop() {
 }
 
 
-void setCarSpeed(int speed)
+/**
+ * Controla a velocidade e direção do motor de trás
+ */
+void setCarSpeed(const int speed)
 {
   if(speed > 0)
   {
@@ -193,7 +233,7 @@ void setCarSpeed(int speed)
   {
     digitalWrite(IN3,0);
     digitalWrite(IN4,1);
-    digitalWrite(PIN_SPEED_MOTOR_BACK,speed);
+    digitalWrite(PIN_SPEED_MOTOR_BACK,-speed);
   }
   else
   {
@@ -202,3 +242,44 @@ void setCarSpeed(int speed)
     digitalWrite(PIN_SPEED_MOTOR_BACK,0);
   }
 }
+
+void setCarDirection(CarDirection direction){
+  switch (direction)
+  {
+    case DIRECTION_LEFT:
+    {
+      digitalWrite(IN1,0);
+      digitalWrite(IN2,0);
+      digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
+      break;
+    }
+
+    case DIRECTION_RIGHT:
+    {
+      digitalWrite(IN1,0);
+      digitalWrite(IN2,0);
+      digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
+      break;
+    }
+    
+    case DIRECTION_CENTER:
+    default:
+    {
+      digitalWrite(IN1,0);
+      digitalWrite(IN2,0);
+      digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
+      break;
+    }
+  }
+}
+
+/**
+ * Controla as luzes em baixo do carro
+ */
+void setLightsColor(const uint32_t color_left, const uint32_t color_right)
+{
+  pixels.clear();  // Set all pixel colors to 'off'
+  pixels.setPixelColor(LED_LEFT, color_left);
+  pixels.setPixelColor(LED_RIGHT, color_right);
+  pixels.show();
+} 
