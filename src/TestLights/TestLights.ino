@@ -19,33 +19,26 @@ void setup() {
 }
 
 void loop() {
-    pixels.clear();  // Set all pixel colors to 'off'
-    pixels.setPixelColor(LED_LEFT, COLOR_RED);
-    pixels.setPixelColor(LED_RIGHT, COLOR_RED);
-    pixels.show();
+    setLightsColor(COLOR_RED,COLOR_RED);
     delay(TIME_DELAY);
 
-    pixels.clear();  // Set all pixel colors to 'off'
-    pixels.setPixelColor(LED_LEFT, COLOR_GREEN);
-    pixels.setPixelColor(LED_RIGHT, COLOR_GREEN);
-    pixels.show();
+    setLightsColor(COLOR_GREEN,COLOR_GREEN);
     delay(TIME_DELAY);
 
-    pixels.clear();  // Set all pixel colors to 'off'
-    pixels.setPixelColor(LED_LEFT, COLOR_BLUE);
-    pixels.setPixelColor(LED_RIGHT, COLOR_BLUE);
-    pixels.show();
+    setLightsColor(COLOR_BLUE,COLOR_BLUE);
     delay(TIME_DELAY);
 
-    pixels.clear();  // Set all pixel colors to 'off'
-    pixels.setPixelColor(LED_LEFT, COLOR_WHITE);
-    pixels.setPixelColor(LED_RIGHT, COLOR_BLUE);
-    pixels.show();
+    setLightsColor(COLOR_WHITE,COLOR_BLUE);
     delay(TIME_DELAY);
 
-    pixels.clear();  // Set all pixel colors to 'off'
-    pixels.setPixelColor(LED_LEFT, COLOR_BLUE);
-    pixels.setPixelColor(LED_RIGHT, COLOR_WHITE);
-    pixels.show();
+    setLightsColor(COLOR_BLUE,COLOR_WHITE);
     delay(TIME_DELAY);
 }
+
+void setLightsColor(const uint32_t color_left, const uint32_t color_right)
+{
+  pixels.clear();  // Set all pixel colors to 'off'
+  pixels.setPixelColor(LED_LEFT, color_left);
+  pixels.setPixelColor(LED_RIGHT, color_right);
+  pixels.show();
+} 

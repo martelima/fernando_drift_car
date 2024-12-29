@@ -4,18 +4,6 @@
              carro bluetooth montado em arduino com uma shield 
              ponte H, através do protocolo serial
 */
-/*
-  É necessario incluir a biblioteca 'AFMotor' pois simplifica o 
-  uso da Shield ponte H
-*/
-
-//#include <AFMotor.h>
-
-//selecionamos os canais 3 e 4 para motor direito e esquerdo
-//respectivamente
-
-//AF_DCMotor motor_dir(3);
-//AF_DCMotor motor_esq(4);
 
 /*
   Aqui definimos a velocidade máxima dos motores porem isso 
@@ -27,26 +15,20 @@
 #define Fator_correcao_Dir 1
 #define Fator_correcao_Tra 1
 
-#define Pin_vel_direcional 11
-#define Pin_vel_motor_traseiro 10
+#define PIN_SPEED_DIRECTION 11
+#define PIN_SPEED_MOTOR_BACK 10
 
 #define VmaxD 127
 #define VmaxT 191
 
 int vel_motor_direcional = 127;
 int vel_motor_traseiro = 191;
-/*
-   Variáveis que controlaram as velocidades do motor direito 
-   e esquerdo
-*/
-
-//int vSpeed_dir = 200; 
-//int vSpeed_esq = 200;
 
 #define Farol_dianteiro 8
 #define Farol_traseiro 7
 #define Pisca_alerta 2
 #define buzina 13
+
 //variável que atribuimos a leitura Serial do módulo bluetooth
 #define IN1 3
 #define IN2 5
@@ -62,8 +44,8 @@ void setup() {
   pinMode(IN2,OUTPUT);
   pinMode(IN3,OUTPUT);
   pinMode(IN4,OUTPUT);
-  pinMode(Pin_vel_motor_traseiro,OUTPUT);
-  pinMode(Pin_vel_direcional,OUTPUT);
+  pinMode(PIN_SPEED_MOTOR_BACK,OUTPUT);
+  pinMode(PIN_SPEED_DIRECTION,OUTPUT);
 }
 void loop() {
   // Atribui os valores da leitura serial na variável "state"
@@ -128,74 +110,56 @@ void loop() {
   if (state == 'F') {
     digitalWrite(IN1,0);
     digitalWrite(IN2,0);
-    digitalWrite(IN3,1);
-    digitalWrite(IN4,0);
-    digitalWrite(Pin_vel_direcional,vel_motor_direcional * Fator_correcao_Dir);
-    digitalWrite(Pin_vel_motor_traseiro,vel_motor_traseiro * Fator_correcao_Tra);
+    digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
+    setCarSpeed(vel_motor_traseiro);
   }
   else if (state == 'G') {  // Se o estado recebido for igual a 'I', o carro se movimenta para Frente Esquerda.
     digitalWrite(IN1,1);
     digitalWrite(IN2,0);
-    digitalWrite(IN3,1);
-    digitalWrite(IN4,0); 
-    digitalWrite(Pin_vel_direcional,vel_motor_direcional * Fator_correcao_Dir);
-    digitalWrite(Pin_vel_motor_traseiro,vel_motor_traseiro * Fator_correcao_Tra);
+    digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
+    setCarSpeed(vel_motor_traseiro);
   }
   else if (state == 'I') {   // Se o estado recebido for igual a 'G', o carro se movimenta para Frente Direita.
     digitalWrite(IN1,0);
     digitalWrite(IN2,1);
-    digitalWrite(IN3,1);
-    digitalWrite(IN4,0);
-    digitalWrite(Pin_vel_direcional,vel_motor_direcional * Fator_correcao_Dir);
-    digitalWrite(Pin_vel_motor_traseiro,vel_motor_traseiro * Fator_correcao_Tra);
+    digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
+    setCarSpeed(vel_motor_traseiro);
   }
   else if (state == 'B') { // Se o estado recebido for igual a 'B', o carro se movimenta para trás.
     digitalWrite(IN1,0);
     digitalWrite(IN2,0);
-    digitalWrite(IN3,0);
-    digitalWrite(IN4,1);
-    digitalWrite(Pin_vel_direcional,vel_motor_direcional * Fator_correcao_Dir);
-    digitalWrite(Pin_vel_motor_traseiro,vel_motor_traseiro * Fator_correcao_Tra);
+    digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
+    setCarSpeed(-vel_motor_traseiro);
   }
   else if (state == 'H') {  // Se o estado recebido for igual a 'H', o carro se movimenta para Trás Esquerda.
     digitalWrite(IN1,1);
     digitalWrite(IN2,0);
-    digitalWrite(IN3,0);
-    digitalWrite(IN4,1);
-    digitalWrite(Pin_vel_direcional,vel_motor_direcional * Fator_correcao_Dir);
-    digitalWrite(Pin_vel_motor_traseiro,vel_motor_traseiro * Fator_correcao_Tra);
+    digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
+    setCarSpeed(-vel_motor_traseiro);
   }
   else if (state == 'J') {  // Se o estado recebido for igual a 'J', o carro se movimenta para Trás Direita.
     digitalWrite(IN1,0);
     digitalWrite(IN2,1);
-    digitalWrite(IN3,0);
-    digitalWrite(IN4,1);
-    digitalWrite(Pin_vel_direcional,vel_motor_direcional * Fator_correcao_Dir);
-    digitalWrite(Pin_vel_motor_traseiro,vel_motor_traseiro * Fator_correcao_Tra);
+    digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
+    setCarSpeed(-vel_motor_traseiro);
   }
   else if (state == 'L') {   // Se o estado recebido for igual a 'L', o carro se movimenta para esquerda.
     digitalWrite(IN1,1);
     digitalWrite(IN2,0);
-    digitalWrite(IN3,0);
-    digitalWrite(IN4,0);
-    digitalWrite(Pin_vel_direcional,vel_motor_direcional * Fator_correcao_Dir);
-    digitalWrite(Pin_vel_motor_traseiro,vel_motor_traseiro * Fator_correcao_Tra);
+    digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
+    setCarSpeed(vel_motor_traseiro);
   }
   else if (state == 'R') {   // Se o estado recebido for igual a 'R', o carro se movimenta para direita.
     digitalWrite(IN1,0);
     digitalWrite(IN2,1);
-    digitalWrite(IN3,0);
-    digitalWrite(IN4,0);
-    digitalWrite(Pin_vel_direcional,vel_motor_direcional * Fator_correcao_Dir);
-    digitalWrite(Pin_vel_motor_traseiro,vel_motor_traseiro * Fator_correcao_Tra);
+    digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
+    setCarSpeed(vel_motor_traseiro);
   }
   else if (state == 'S') {   // Se o estado recebido for igual a 'S', o carro permanece parado.
     digitalWrite(IN1,0);
     digitalWrite(IN2,0);
-    digitalWrite(IN3,0);
-    digitalWrite(IN4,0);
-    digitalWrite(Pin_vel_direcional,vel_motor_direcional * Fator_correcao_Dir);
-    digitalWrite(Pin_vel_motor_traseiro,vel_motor_traseiro * Fator_correcao_Tra);
+    digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
+    setCarSpeed(0);
   }
   else if (state == 'W') {   // Se o estado recebido for igual a 'W', Farol dianteiro acende.
   }
@@ -213,5 +177,28 @@ void loop() {
   }
   else if (state == 'x') {   // Se o estado recebido for igual a 'x', Pisca alerta apaga.
     
+  }
+}
+
+
+void setCarSpeed(int speed)
+{
+  if(speed > 0)
+  {
+    digitalWrite(IN3,1);
+    digitalWrite(IN4,0);
+    digitalWrite(PIN_SPEED_MOTOR_BACK,speed);
+  }
+  else if(speed < 0)
+  {
+    digitalWrite(IN3,0);
+    digitalWrite(IN4,1);
+    digitalWrite(PIN_SPEED_MOTOR_BACK,speed);
+  }
+  else
+  {
+    digitalWrite(IN3,0);
+    digitalWrite(IN4,0);
+    digitalWrite(PIN_SPEED_MOTOR_BACK,0);
   }
 }

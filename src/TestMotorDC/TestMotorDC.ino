@@ -12,8 +12,6 @@
 const uint8_t MAX_SPEED_ALLOWED = 100;
 const uint8_t MOTOR_DEAD_ZONE = 32;
 
-int speedMotor,speedStep;
-
 void setup() {
   
   Serial.begin(9600);
@@ -34,6 +32,8 @@ void loop() {
   digitalWrite(MOTOR_BACK_IN4,0);
 
   // Set Speed
+  static int speedMotor = 0;
+  static int speedStep = 0;
   analogWrite(MOTOR_BACK_SPEED,speedMotor);
   speedStep = (speedMotor >= MAX_SPEED_ALLOWED)?-1:(speedMotor < 10) ?1:speedStep;
   speedMotor += speedStep;
