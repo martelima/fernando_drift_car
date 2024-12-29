@@ -47,7 +47,6 @@ int vel_motor_traseiro = 191;
 #define Pisca_alerta 2
 #define buzina 13
 
-//variável que atribuimos a leitura Serial do módulo bluetooth
 #define IN1 3
 #define IN2 5
 #define IN3 6
@@ -136,65 +135,47 @@ void loop() {
   }
   // Se o estado recebido for igual a 'F', o carro se movimenta para frente.
   if (state == 'F') {
-    digitalWrite(IN1,0);
-    digitalWrite(IN2,0);
-    digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
+    setCarDirection(DIRECTION_CENTER);
     setCarSpeed(vel_motor_traseiro);
     setLightsColor(COLOR_BLUE,COLOR_BLUE);
   }
   else if (state == 'G') {  // Se o estado recebido for igual a 'I', o carro se movimenta para Frente Esquerda.
-    digitalWrite(IN1,1);
-    digitalWrite(IN2,0);
-    digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
+    setCarDirection(DIRECTION_LEFT);
     setCarSpeed(vel_motor_traseiro);
     setLightsColor(COLOR_WHITE,COLOR_BLUE);
   }
   else if (state == 'I') {   // Se o estado recebido for igual a 'G', o carro se movimenta para Frente Direita.
-    digitalWrite(IN1,0);
-    digitalWrite(IN2,1);
-    digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
+    setCarDirection(DIRECTION_RIGHT);
     setCarSpeed(vel_motor_traseiro);
     setLightsColor(COLOR_BLUE,COLOR_WHITE);
   }
   else if (state == 'B') { // Se o estado recebido for igual a 'B', o carro se movimenta para trás.
-    digitalWrite(IN1,0);
-    digitalWrite(IN2,0);
-    digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
+    setCarDirection(DIRECTION_CENTER);
     setCarSpeed(-vel_motor_traseiro);
     setLightsColor(COLOR_RED,COLOR_RED);
   }
   else if (state == 'H') {  // Se o estado recebido for igual a 'H', o carro se movimenta para Trás Esquerda.
-    digitalWrite(IN1,1);
-    digitalWrite(IN2,0);
-    digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
+    setCarDirection(DIRECTION_LEFT);
     setCarSpeed(-vel_motor_traseiro);
     setLightsColor(COLOR_WHITE,COLOR_RED);
   }
   else if (state == 'J') {  // Se o estado recebido for igual a 'J', o carro se movimenta para Trás Direita.
-    digitalWrite(IN1,0);
-    digitalWrite(IN2,1);
-    digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
+    setCarDirection(DIRECTION_RIGHT);
     setCarSpeed(-vel_motor_traseiro);
     setLightsColor(COLOR_RED,COLOR_WHITE);
   }
   else if (state == 'L') {   // Se o estado recebido for igual a 'L', o carro se movimenta para esquerda.
-    digitalWrite(IN1,1);
-    digitalWrite(IN2,0);
-    digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
+    setCarDirection(DIRECTION_LEFT);
     setCarSpeed(0);
     setLightsColor(COLOR_WHITE,COLOR_OFF);
   }
   else if (state == 'R') {   // Se o estado recebido for igual a 'R', o carro se movimenta para direita.
-    digitalWrite(IN1,0);
-    digitalWrite(IN2,1);
-    digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
+    setCarDirection(DIRECTION_RIGHT);
     setCarSpeed(0);
     setLightsColor(COLOR_OFF,COLOR_WHITE);
   }
   else if (state == 'S') {   // Se o estado recebido for igual a 'S', o carro permanece parado.
-    digitalWrite(IN1,0);
-    digitalWrite(IN2,0);
-    digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
+    setCarDirection(DIRECTION_CENTER);
     setCarSpeed(0);
     setLightsColor(COLOR_OFF,COLOR_OFF);
   }
@@ -243,12 +224,15 @@ void setCarSpeed(const int speed)
   }
 }
 
+/**
+ * Controla a direção do carro através do motor da frente
+ */
 void setCarDirection(CarDirection direction){
   switch (direction)
   {
     case DIRECTION_LEFT:
     {
-      digitalWrite(IN1,0);
+      digitalWrite(IN1,1);
       digitalWrite(IN2,0);
       digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
       break;
@@ -257,7 +241,7 @@ void setCarDirection(CarDirection direction){
     case DIRECTION_RIGHT:
     {
       digitalWrite(IN1,0);
-      digitalWrite(IN2,0);
+      digitalWrite(IN2,1);
       digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
       break;
     }
@@ -267,7 +251,7 @@ void setCarDirection(CarDirection direction){
     {
       digitalWrite(IN1,0);
       digitalWrite(IN2,0);
-      digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
+      digitalWrite(PIN_SPEED_DIRECTION,0);
       break;
     }
   }
