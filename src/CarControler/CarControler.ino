@@ -8,10 +8,8 @@
 #include "Arduino.h"
 #include <Adafruit_NeoPixel.h>
 
-const unsigned int PIN_LEDSTRIP = A0;
+const int PIN_LEDSTRIP = A0;
 const unsigned int NUM_LEDS = 2;
-const long TIME_DELAY = 1000;
-
 const uint16_t LED_LEFT = 0;
 const uint16_t LED_RIGHT = 1;
 
@@ -30,19 +28,16 @@ const uint32_t COLOR_OFF = pixels.Color(0, 0, 0);
   equivalente a 255, por PWM os motores receberão tensão 
   total da fonte que estiver utilizando.
 */
-#define Fator_correcao_Dir 1
-#define Fator_correcao_Tra 1
+const int MAX_SPEED_MOTOR_BACK = 191;
+const int MAX_SPEED_MOTOR_TURN = 127;
 
-#define PIN_SPEED_DIRECTION 10
-#define PIN_SPEED_MOTOR_BACK 11
+const int PIN_LIGHT_FRONT = 8;
+const int PIN_LIGHT_BACK = 7;
+const int PIN_LIGHT_ALERT = 2;
 
-#define VmaxD 127
-#define VmaxT 191
-
-#define Farol_dianteiro 8
-#define Farol_traseiro 7
-#define Pisca_alerta 2
-#define buzina 13
+const int PIN_BUZZ = 13;
+const int PIN_SPEED_MOTOR_TURN = 10;
+const int PIN_SPEED_MOTOR_BACK = 11;
 
 #define IN1 3
 #define IN2 5
@@ -100,13 +95,13 @@ void setup() {
   pinMode(IN3,OUTPUT);
   pinMode(IN4,OUTPUT);
   pinMode(PIN_SPEED_MOTOR_BACK,OUTPUT);
-  pinMode(PIN_SPEED_DIRECTION,OUTPUT);
+  pinMode(PIN_SPEED_MOTOR_TURN,OUTPUT);
 
   pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
   pixels.clear();
 }
 void loop() {
-  static int carSpeed = VmaxT;
+  static int carSpeed = MAX_SPEED_MOTOR_BACK;
   static CarBTCommands state = CMD_STOP;
 
   // Atribui os valores da leitura serial na variável "state"
@@ -134,52 +129,52 @@ void loop() {
     }
     case CMD_SET_SPEED_1:
     {
-      carSpeed = VmaxT / 10;
+      carSpeed = MAX_SPEED_MOTOR_BACK / 10;
       break;
     }
     case CMD_SET_SPEED_2:
     {
-      carSpeed = (2 * VmaxT) / 10;
+      carSpeed = (2 * MAX_SPEED_MOTOR_BACK) / 10;
       break;
     }
     case CMD_SET_SPEED_3:
     {
-      carSpeed = (3 * VmaxT) / 10;
+      carSpeed = (3 * MAX_SPEED_MOTOR_BACK) / 10;
       break;
     }
     case CMD_SET_SPEED_4:
     {
-      carSpeed = (4 * VmaxT) / 10;
+      carSpeed = (4 * MAX_SPEED_MOTOR_BACK) / 10;
       break;
     }
     case CMD_SET_SPEED_5:
     {
-      carSpeed = (5 * VmaxT) / 10;
+      carSpeed = (5 * MAX_SPEED_MOTOR_BACK) / 10;
       break;
     }
     case CMD_SET_SPEED_6:
     {
-      carSpeed = (6 * VmaxT) / 10;
+      carSpeed = (6 * MAX_SPEED_MOTOR_BACK) / 10;
       break;
     }
     case CMD_SET_SPEED_7:
     {
-      carSpeed = (7 * VmaxT) / 10;
+      carSpeed = (7 * MAX_SPEED_MOTOR_BACK) / 10;
       break;
     }
     case CMD_SET_SPEED_8:
     {
-      carSpeed = (8 * VmaxT) / 10;
+      carSpeed = (8 * MAX_SPEED_MOTOR_BACK) / 10;
       break;
     }
     case CMD_SET_SPEED_9:
     {
-      carSpeed = (9 * VmaxT) / 10;
+      carSpeed = (9 * MAX_SPEED_MOTOR_BACK) / 10;
       break;
     }
     case CMD_SET_SPEED_MAX:
     {
-      carSpeed = VmaxT;
+      carSpeed = MAX_SPEED_MOTOR_BACK;
       break;
     }
 
@@ -305,7 +300,7 @@ void setCarDirection(CarDirection direction){
     {
       digitalWrite(IN1,1);
       digitalWrite(IN2,0);
-      analogWrite(PIN_SPEED_DIRECTION,SPEED_MOTOR_DIRECTION);
+      analogWrite(PIN_SPEED_MOTOR_TURN,SPEED_MOTOR_DIRECTION);
       break;
     }
 
@@ -313,7 +308,7 @@ void setCarDirection(CarDirection direction){
     {
       digitalWrite(IN1,0);
       digitalWrite(IN2,1);
-      analogWrite(PIN_SPEED_DIRECTION,SPEED_MOTOR_DIRECTION);
+      analogWrite(PIN_SPEED_MOTOR_TURN,SPEED_MOTOR_DIRECTION);
       break;
     }
     
@@ -322,7 +317,7 @@ void setCarDirection(CarDirection direction){
     {
       digitalWrite(IN1,0);
       digitalWrite(IN2,0);
-      analogWrite(PIN_SPEED_DIRECTION,0);
+      analogWrite(PIN_SPEED_MOTOR_TURN,0);
       break;
     }
   }
