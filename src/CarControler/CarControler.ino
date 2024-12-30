@@ -57,6 +57,40 @@ enum CarDirection: int8_t {
   DIRECTION_RIGHT = 1
 };
 
+/**
+ * Mapa dos comandos enviados via bluetooth pelo aplicativo
+ */
+enum CarBTCommands: char {
+  CMD_SET_SPEED_0 = '0',
+  CMD_SET_SPEED_1 = '1',
+  CMD_SET_SPEED_2 = '2',
+  CMD_SET_SPEED_3 = '3',
+  CMD_SET_SPEED_4 = '4',
+  CMD_SET_SPEED_5 = '5',
+  CMD_SET_SPEED_6 = '6',
+  CMD_SET_SPEED_7 = '7',
+  CMD_SET_SPEED_8 = '8',
+  CMD_SET_SPEED_9 = '9',
+  CMD_SET_SPEED_MAX = 'q',
+  CMD_MOVE_LEFT = 'L',
+  CMD_MOVE_RIGHT = 'R',
+  CMD_MOVE_FORWARDS = 'F',
+  CMD_MOVE_FORWARDS_LEFT = 'G',
+  CMD_MOVE_FORWARDS_RIGHT = 'I',
+  CMD_MOVE_BACKWARDS = 'B',
+  CMD_MOVE_BACKWARDS_LEFT = 'H',
+  CMD_MOVE_BACKWARDS_RIGHT = 'J',
+  CMD_FRONT_LIGHT_ON = 'W',
+  CMD_FRONT_LIGHT_OFF = 'w',
+  CMD_BACK_LIGHT_ON = 'U',
+  CMD_BACK_LIGHT_OFF = 'u',
+  CMD_ALERT_LIGHT_ON = 'X',
+  CMD_ALERT_LIGHT_OFF = 'x',
+  CMD_BUZZ_ON = 'V',
+  CMD_BUZZ_OFF = 'v',
+  CMD_STOP = 'S'
+};
+
 void setup() {
   // Inicializa a comunicação serial em 9600 bits.
   Serial.begin(9600);
@@ -73,119 +107,165 @@ void setup() {
 }
 void loop() {
   static int carSpeed = VmaxT;
-  static char state = 'S';
+  static CarBTCommands state = CMD_STOP;
 
   // Atribui os valores da leitura serial na variável "state"
   if (Serial.available() > 0) {
     state = Serial.read();
     Serial.write(state);
   }
-  /*
-    Aqui controlamos a velocidade que o carro bluetooth irá
-    se locomover, portanto multiplicamos a velocidade maxima
-    por valores decimais para reduzir proporcionamente as 
-    velocidades dos motores direito e esquerdo. 
-    
-    Quando a variavel "state" assumir o caractere 7,através do meio 
-    serial, as velocidades são correspondentes à 70% da velocidade 
-    máxima dos motores
-  */
-  if (state == '0') {
-    carSpeed = 0;
-  }
-  else if (state == '1') {
-    carSpeed = VmaxT / 10;
-  }
-  else if (state == '2') {
-    carSpeed = (2 * VmaxT) / 10;
-  }
-  else if (state == '3') {
-    carSpeed = (3 * VmaxT) / 10;
-  }
-  else if (state == '4') {
-    carSpeed = (4 * VmaxT) / 10;
-  }
-  else if (state == '5') {
-    carSpeed = (5 * VmaxT) / 10;
-  }
-  else if (state == '6') {
-    carSpeed = (6 * VmaxT) / 10;
-  }
-  else if (state == '7') {
-    carSpeed = (7 * VmaxT) / 10;
-  }
-  else if (state == '8') {
-    carSpeed = (8 * VmaxT) / 10;
-  }
-  else if (state == '9') {
-    carSpeed = (9 * VmaxT) / 10;
-  }
-  else if (state == 'q') {
-    carSpeed = VmaxT;
-  }
 
-  // Se o estado recebido for igual a 'F', o carro se movimenta para frente.
-  if (state == 'F') {
-    setCarDirection(DIRECTION_CENTER);
-    setCarSpeed(carSpeed);
-    setLightsColor(COLOR_BLUE,COLOR_BLUE);
-  }
-  else if (state == 'G') {  // Se o estado recebido for igual a 'I', o carro se movimenta para Frente Esquerda.
-    setCarDirection(DIRECTION_LEFT);
-    setCarSpeed(carSpeed);
-    setLightsColor(COLOR_WHITE,COLOR_BLUE);
-  }
-  else if (state == 'I') {   // Se o estado recebido for igual a 'G', o carro se movimenta para Frente Direita.
-    setCarDirection(DIRECTION_RIGHT);
-    setCarSpeed(carSpeed);
-    setLightsColor(COLOR_BLUE,COLOR_WHITE);
-  }
-  else if (state == 'B') { // Se o estado recebido for igual a 'B', o carro se movimenta para trás.
-    setCarDirection(DIRECTION_CENTER);
-    setCarSpeed(-carSpeed);
-    setLightsColor(COLOR_RED,COLOR_RED);
-  }
-  else if (state == 'H') {  // Se o estado recebido for igual a 'H', o carro se movimenta para Trás Esquerda.
-    setCarDirection(DIRECTION_LEFT);
-    setCarSpeed(-carSpeed);
-    setLightsColor(COLOR_WHITE,COLOR_RED);
-  }
-  else if (state == 'J') {  // Se o estado recebido for igual a 'J', o carro se movimenta para Trás Direita.
-    setCarDirection(DIRECTION_RIGHT);
-    setCarSpeed(-carSpeed);
-    setLightsColor(COLOR_RED,COLOR_WHITE);
-  }
-  else if (state == 'L') {   // Se o estado recebido for igual a 'L', o carro se movimenta para esquerda.
-    setCarDirection(DIRECTION_LEFT);
-    setCarSpeed(0);
-    setLightsColor(COLOR_WHITE,COLOR_OFF);
-  }
-  else if (state == 'R') {   // Se o estado recebido for igual a 'R', o carro se movimenta para direita.
-    setCarDirection(DIRECTION_RIGHT);
-    setCarSpeed(0);
-    setLightsColor(COLOR_OFF,COLOR_WHITE);
-  }
-  else if (state == 'S') {   // Se o estado recebido for igual a 'S', o carro permanece parado.
-    setCarDirection(DIRECTION_CENTER);
-    setCarSpeed(0);
-    setLightsColor(COLOR_OFF,COLOR_OFF);
-  }
-  else if (state == 'W') {   // Se o estado recebido for igual a 'W', Farol dianteiro acende.
-  }
-  else if (state == 'w') {   // Se o estado recebido for igual a 'w', Farol dianteiro apaga.
-  }
-  else if (state == 'U') {   // Se o estado recebido for igual a 'U', Farol traseiro acende.
-  }
-  else if (state == 'u') {   // Se o estado recebido for igual a 'u', Farol traseiro apaga.
-  }
-  else if (state == 'V') {   // Se o estado recebido for igual a 'V', liga buzina.
-  }
-  else if (state == 'v') {   // Se o estado recebido for igual a 'v', desliga buzina.
-  }
-  else if (state == 'X') {   // Se o estado recebido for igual a 'X', Pisca alerta acende.
-  }
-  else if (state == 'x') {   // Se o estado recebido for igual a 'x', Pisca alerta apaga.
-    
+  switch(state)
+  {
+    /*
+      Aqui controlamos a velocidade que o carro bluetooth irá
+      se locomover, portanto multiplicamos a velocidade maxima
+      por valores decimais para reduzir proporcionamente as 
+      velocidades dos motores direito e esquerdo. 
+      
+      Quando a variavel "state" assumir o caractere 7,através do meio 
+      serial, as velocidades são correspondentes à 70% da velocidade 
+      máxima dos motores
+    */
+    case CMD_SET_SPEED_0:
+    {
+      carSpeed = 0;
+      break;
+    }
+    case CMD_SET_SPEED_1:
+    {
+      carSpeed = VmaxT / 10;
+      break;
+    }
+    case CMD_SET_SPEED_2:
+    {
+      carSpeed = (2 * VmaxT) / 10;
+      break;
+    }
+    case CMD_SET_SPEED_3:
+    {
+      carSpeed = (3 * VmaxT) / 10;
+      break;
+    }
+    case CMD_SET_SPEED_4:
+    {
+      carSpeed = (4 * VmaxT) / 10;
+      break;
+    }
+    case CMD_SET_SPEED_5:
+    {
+      carSpeed = (5 * VmaxT) / 10;
+      break;
+    }
+    case CMD_SET_SPEED_6:
+    {
+      carSpeed = (6 * VmaxT) / 10;
+      break;
+    }
+    case CMD_SET_SPEED_7:
+    {
+      carSpeed = (7 * VmaxT) / 10;
+      break;
+    }
+    case CMD_SET_SPEED_8:
+    {
+      carSpeed = (8 * VmaxT) / 10;
+      break;
+    }
+    case CMD_SET_SPEED_9:
+    {
+      carSpeed = (9 * VmaxT) / 10;
+      break;
+    }
+    case CMD_SET_SPEED_MAX:
+    {
+      carSpeed = VmaxT;
+      break;
+    }
+
+    /*
+      Aqui controlamos a direção do carro e acionamento dos motores 
+     */
+    case CMD_MOVE_FORWARDS:
+    {
+      setCarDirection(DIRECTION_CENTER);
+      setCarSpeed(carSpeed);
+      setLightsColor(COLOR_BLUE,COLOR_BLUE);
+      break;
+    }
+    case CMD_MOVE_FORWARDS_LEFT:
+    {
+      setCarDirection(DIRECTION_LEFT);
+      setCarSpeed(carSpeed);
+      setLightsColor(COLOR_WHITE,COLOR_BLUE);
+      break;
+    }
+    case CMD_MOVE_FORWARDS_RIGHT:
+    {
+      setCarDirection(DIRECTION_RIGHT);
+      setCarSpeed(carSpeed);
+      setLightsColor(COLOR_BLUE,COLOR_WHITE);
+      break;
+    }
+    case CMD_MOVE_BACKWARDS:
+    {
+      setCarDirection(DIRECTION_CENTER);
+      setCarSpeed(-carSpeed);
+      setLightsColor(COLOR_RED,COLOR_RED);
+      break;
+    }
+    case CMD_MOVE_BACKWARDS_LEFT:
+    {
+      setCarDirection(DIRECTION_LEFT);
+      setCarSpeed(-carSpeed);
+      setLightsColor(COLOR_WHITE,COLOR_RED);
+      break;
+    }
+    case CMD_MOVE_BACKWARDS_RIGHT:
+    {
+      setCarDirection(DIRECTION_RIGHT);
+      setCarSpeed(-carSpeed);
+      setLightsColor(COLOR_RED,COLOR_WHITE);
+      break;
+    }
+    case CMD_MOVE_LEFT:
+    {
+      setCarDirection(DIRECTION_LEFT);
+      setCarSpeed(0);
+      setLightsColor(COLOR_WHITE,COLOR_OFF);
+      break;
+    }
+    case CMD_MOVE_RIGHT:
+    {
+      setCarDirection(DIRECTION_RIGHT);
+      setCarSpeed(0);
+      setLightsColor(COLOR_OFF,COLOR_WHITE);
+      break;
+    }
+    case CMD_STOP:
+    {
+      setCarDirection(DIRECTION_CENTER);
+      setCarSpeed(0);
+      setLightsColor(COLOR_OFF,COLOR_OFF);
+      break;
+    }
+
+    /*
+      Aqui temos algums comandos extras do aplicativo
+    */
+    case CMD_FRONT_LIGHT_ON:
+    case CMD_FRONT_LIGHT_OFF:
+    case CMD_BACK_LIGHT_ON:
+    case CMD_BACK_LIGHT_OFF:
+    case CMD_ALERT_LIGHT_ON:
+    case CMD_ALERT_LIGHT_OFF:
+    case CMD_BUZZ_ON:
+    case CMD_BUZZ_OFF:
+    default:
+    {
+      // Comandos não mapeados por hora
+      break;
+    }
   }
 }
 
