@@ -33,8 +33,8 @@ const uint32_t COLOR_OFF = pixels.Color(0, 0, 0);
 #define Fator_correcao_Dir 1
 #define Fator_correcao_Tra 1
 
-#define PIN_SPEED_DIRECTION 11
-#define PIN_SPEED_MOTOR_BACK 10
+#define PIN_SPEED_DIRECTION 10
+#define PIN_SPEED_MOTOR_BACK 11
 
 #define VmaxD 127
 #define VmaxT 191
