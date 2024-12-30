@@ -10,6 +10,7 @@
 
 /**
  * Define todas as portas usadas dentro de um enum para previnir nomes duplicados
+ * para a mesma porta
  */
 enum ArduinoPins: int
 {
@@ -18,7 +19,11 @@ enum ArduinoPins: int
   PIN_LIGHT_BACK = 7,
   PIN_LIGHT_ALERT = 2,
   PIN_BUZZ = 13,
+  PIN_MOTOR_TURN_1 = 3,
+  PIN_MOTOR_TURN_2 = 5,
   PIN_SPEED_MOTOR_TURN = 10,
+  PIN_MOTOR_BACK_1 = 6,
+  PIN_MOTOR_BACK_2 = 9,
   PIN_SPEED_MOTOR_BACK = 11
 };
 
@@ -43,13 +48,7 @@ const uint32_t COLOR_OFF = pixels.Color(0, 0, 0);
 */
 const int MAX_SPEED_MOTOR_BACK = 191;
 const int MAX_SPEED_MOTOR_TURN = 127;
-
-#define IN1 3
-#define IN2 5
-#define IN3 6
-#define IN4 9
-
-const int SPEED_MOTOR_DIRECTION = 50;
+const int SPEED_MOTOR_DIRECTION = 100;
 
 enum CarDirection: int8_t {
   DIRECTION_LEFT = -1,
@@ -101,10 +100,10 @@ void setup() {
   Serial.begin(9600);
 
   // Inicializa pinos PONTE H
-  pinMode(IN1,OUTPUT);
-  pinMode(IN2,OUTPUT);
-  pinMode(IN3,OUTPUT);
-  pinMode(IN4,OUTPUT);
+  pinMode(PIN_MOTOR_TURN_1,OUTPUT);
+  pinMode(PIN_MOTOR_TURN_2,OUTPUT);
+  pinMode(PIN_MOTOR_BACK_1,OUTPUT);
+  pinMode(PIN_SPEED_MOTOR_BACK,OUTPUT);
   pinMode(PIN_SPEED_MOTOR_BACK,OUTPUT);
   pinMode(PIN_SPEED_MOTOR_TURN,OUTPUT);
 
@@ -112,6 +111,7 @@ void setup() {
   pixels.begin();
   pixels.clear();
 }
+
 void loop() {
   static int carSpeed = MAX_SPEED_MOTOR_BACK;
   static CarBTCommands state = CMD_STOP;
@@ -284,20 +284,20 @@ void setCarSpeed(const int speed)
 {
   if(speed > 0)
   {
-    digitalWrite(IN3,1);
-    digitalWrite(IN4,0);
+    digitalWrite(PIN_MOTOR_BACK_1,1);
+    digitalWrite(PIN_MOTOR_BACK_2,0);
     analogWrite(PIN_SPEED_MOTOR_BACK,speed);
   }
   else if(speed < 0)
   {
-    digitalWrite(IN3,0);
-    digitalWrite(IN4,1);
+    digitalWrite(PIN_MOTOR_BACK_1,0);
+    digitalWrite(PIN_MOTOR_BACK_2,1);
     analogWrite(PIN_SPEED_MOTOR_BACK,-speed);
   }
   else
   {
-    digitalWrite(IN3,0);
-    digitalWrite(IN4,0);
+    digitalWrite(PIN_MOTOR_BACK_1,0);
+    digitalWrite(PIN_MOTOR_BACK_2,0);
     analogWrite(PIN_SPEED_MOTOR_BACK,0);
   }
 }
@@ -310,16 +310,16 @@ void setCarDirection(CarDirection direction){
   {
     case DIRECTION_LEFT:
     {
-      digitalWrite(IN1,1);
-      digitalWrite(IN2,0);
+      digitalWrite(PIN_MOTOR_TURN_1,1);
+      digitalWrite(PIN_MOTOR_TURN_2,0);
       analogWrite(PIN_SPEED_MOTOR_TURN,SPEED_MOTOR_DIRECTION);
       break;
     }
 
     case DIRECTION_RIGHT:
     {
-      digitalWrite(IN1,0);
-      digitalWrite(IN2,1);
+      digitalWrite(PIN_MOTOR_TURN_1,0);
+      digitalWrite(PIN_MOTOR_TURN_2,1);
       analogWrite(PIN_SPEED_MOTOR_TURN,SPEED_MOTOR_DIRECTION);
       break;
     }
@@ -327,8 +327,8 @@ void setCarDirection(CarDirection direction){
     case DIRECTION_CENTER:
     default:
     {
-      digitalWrite(IN1,0);
-      digitalWrite(IN2,0);
+      digitalWrite(PIN_MOTOR_TURN_1,0);
+      digitalWrite(PIN_MOTOR_TURN_2,0);
       analogWrite(PIN_SPEED_MOTOR_TURN,0);
       break;
     }
