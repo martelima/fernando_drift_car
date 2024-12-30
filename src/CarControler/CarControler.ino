@@ -8,7 +8,20 @@
 #include "Arduino.h"
 #include <Adafruit_NeoPixel.h>
 
-const int PIN_LEDSTRIP = A0;
+/**
+ * Define todas as portas usadas dentro de um enum para previnir nomes duplicados
+ */
+enum ArduinoPins: int
+{
+  PIN_LEDSTRIP = A0,
+  PIN_LIGHT_FRONT = 8,
+  PIN_LIGHT_BACK = 7,
+  PIN_LIGHT_ALERT = 2,
+  PIN_BUZZ = 13,
+  PIN_SPEED_MOTOR_TURN = 10,
+  PIN_SPEED_MOTOR_BACK = 11
+};
+
 const unsigned int NUM_LEDS = 2;
 const uint16_t LED_LEFT = 0;
 const uint16_t LED_RIGHT = 1;
@@ -31,14 +44,6 @@ const uint32_t COLOR_OFF = pixels.Color(0, 0, 0);
 const int MAX_SPEED_MOTOR_BACK = 191;
 const int MAX_SPEED_MOTOR_TURN = 127;
 
-const int PIN_LIGHT_FRONT = 8;
-const int PIN_LIGHT_BACK = 7;
-const int PIN_LIGHT_ALERT = 2;
-
-const int PIN_BUZZ = 13;
-const int PIN_SPEED_MOTOR_TURN = 10;
-const int PIN_SPEED_MOTOR_BACK = 11;
-
 #define IN1 3
 #define IN2 5
 #define IN3 6
@@ -56,6 +61,7 @@ enum CarDirection: int8_t {
  * Mapa dos comandos enviados via bluetooth pelo aplicativo
  */
 enum CarBTCommands: char {
+  // Comandos para ajuste da velocidade do carro:
   CMD_SET_SPEED_0 = '0',
   CMD_SET_SPEED_1 = '1',
   CMD_SET_SPEED_2 = '2',
@@ -67,6 +73,7 @@ enum CarBTCommands: char {
   CMD_SET_SPEED_8 = '8',
   CMD_SET_SPEED_9 = '9',
   CMD_SET_SPEED_MAX = 'q',
+  // Comandos de movimentação:
   CMD_MOVE_LEFT = 'L',
   CMD_MOVE_RIGHT = 'R',
   CMD_MOVE_FORWARDS = 'F',
@@ -75,6 +82,8 @@ enum CarBTCommands: char {
   CMD_MOVE_BACKWARDS = 'B',
   CMD_MOVE_BACKWARDS_LEFT = 'H',
   CMD_MOVE_BACKWARDS_RIGHT = 'J',
+  CMD_STOP = 'S',
+  // Comandos extras:
   CMD_FRONT_LIGHT_ON = 'W',
   CMD_FRONT_LIGHT_OFF = 'w',
   CMD_BACK_LIGHT_ON = 'U',
@@ -82,14 +91,16 @@ enum CarBTCommands: char {
   CMD_ALERT_LIGHT_ON = 'X',
   CMD_ALERT_LIGHT_OFF = 'x',
   CMD_BUZZ_ON = 'V',
-  CMD_BUZZ_OFF = 'v',
-  CMD_STOP = 'S'
+  CMD_BUZZ_OFF = 'v'
 };
+
+
 
 void setup() {
   // Inicializa a comunicação serial em 9600 bits.
   Serial.begin(9600);
 
+  // Inicializa pinos PONTE H
   pinMode(IN1,OUTPUT);
   pinMode(IN2,OUTPUT);
   pinMode(IN3,OUTPUT);
@@ -97,7 +108,8 @@ void setup() {
   pinMode(PIN_SPEED_MOTOR_BACK,OUTPUT);
   pinMode(PIN_SPEED_MOTOR_TURN,OUTPUT);
 
-  pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
+  // Inicializa Controle fita de LED
+  pixels.begin();
   pixels.clear();
 }
 void loop() {
@@ -107,7 +119,7 @@ void loop() {
   // Atribui os valores da leitura serial na variável "state"
   if (Serial.available() > 0) {
     state = Serial.read();
-    Serial.write(state);
+    Serial.println((char) state);
   }
 
   switch(state)
@@ -120,7 +132,7 @@ void loop() {
       
       Quando a variavel "state" assumir o caractere 7,através do meio 
       serial, as velocidades são correspondentes à 70% da velocidade 
-      máxima dos motores
+      máxima permitida dos motores
     */
     case CMD_SET_SPEED_0:
     {
@@ -246,7 +258,7 @@ void loop() {
     }
 
     /*
-      Aqui temos algums comandos extras do aplicativo
+      Aqui temos alguns comandos extras do aplicativo
     */
     case CMD_FRONT_LIGHT_ON:
     case CMD_FRONT_LIGHT_OFF:
@@ -258,7 +270,7 @@ void loop() {
     case CMD_BUZZ_OFF:
     default:
     {
-      // Comandos não mapeados por hora
+      // Comandos não usados por hora
       break;
     }
   }
