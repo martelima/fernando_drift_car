@@ -39,9 +39,6 @@ const uint32_t COLOR_OFF = pixels.Color(0, 0, 0);
 #define VmaxD 127
 #define VmaxT 191
 
-int vel_motor_direcional = 127;
-int vel_motor_traseiro = 191;
-
 #define Farol_dianteiro 8
 #define Farol_traseiro 7
 #define Pisca_alerta 2
@@ -51,6 +48,8 @@ int vel_motor_traseiro = 191;
 #define IN2 5
 #define IN3 6
 #define IN4 9
+
+const int SPEED_MOTOR_DIRECTION = 50;
 
 enum CarDirection: int8_t {
   DIRECTION_LEFT = -1,
@@ -73,6 +72,7 @@ void setup() {
   pixels.clear();
 }
 void loop() {
+  static int carSpeed = VmaxT;
   static char state = 'S';
 
   // Atribui os valores da leitura serial na variável "state"
@@ -91,77 +91,68 @@ void loop() {
     máxima dos motores
   */
   if (state == '0') {
-    vel_motor_direcional = VmaxD * 0;
-    vel_motor_traseiro = VmaxT * 0;
+    carSpeed = 0;
   }
   else if (state == '1') {
-    vel_motor_direcional = VmaxD * 0.1;
-    vel_motor_traseiro = VmaxT * 0.1;
+    carSpeed = VmaxT / 10;
   }
   else if (state == '2') {
-    vel_motor_direcional = VmaxD * 0.2;
-    vel_motor_traseiro = VmaxT * 0.2;
+    carSpeed = (2 * VmaxT) / 10;
   }
   else if (state == '3') {
-    vel_motor_direcional = VmaxD * 0.3;
-    vel_motor_traseiro = VmaxT * 0.3;
+    carSpeed = (3 * VmaxT) / 10;
   }
   else if (state == '4') {
-    vel_motor_direcional = VmaxD * 0.39;
-    vel_motor_traseiro = VmaxT * 0.39; 
+    carSpeed = (4 * VmaxT) / 10;
   }
   else if (state == '5') {
-    vel_motor_direcional = VmaxD * 0.5;
-    vel_motor_traseiro = VmaxT * 0.5;
+    carSpeed = (5 * VmaxT) / 10;
   }
   else if (state == '6') {
-    vel_motor_direcional = VmaxD * 0.6;
-    vel_motor_traseiro = VmaxT * 0.6;
+    carSpeed = (6 * VmaxT) / 10;
   }
   else if (state == '7') {
-    vel_motor_direcional = VmaxD * 0.7;
-    vel_motor_traseiro = VmaxT * 0.7;
+    carSpeed = (7 * VmaxT) / 10;
   }
   else if (state == '8') {
-    vel_motor_direcional = VmaxD * 0.78;
-    vel_motor_traseiro = VmaxT * 0.78;
+    carSpeed = (8 * VmaxT) / 10;
   }
   else if (state == '9') {
-    vel_motor_direcional = VmaxD * 0.9;
-    vel_motor_traseiro = VmaxT * 0.9;
+    carSpeed = (9 * VmaxT) / 10;
   }
   else if (state == 'q') {
-    vel_motor_traseiro = VmaxT;
+    carSpeed = VmaxT;
   }
+
   // Se o estado recebido for igual a 'F', o carro se movimenta para frente.
   if (state == 'F') {
     setCarDirection(DIRECTION_CENTER);
-    setCarSpeed(vel_motor_traseiro);
+    setCarSpeed(carSpeed);
     setLightsColor(COLOR_BLUE,COLOR_BLUE);
   }
   else if (state == 'G') {  // Se o estado recebido for igual a 'I', o carro se movimenta para Frente Esquerda.
     setCarDirection(DIRECTION_LEFT);
-    setCarSpeed(vel_motor_traseiro);
+    setCarSpeed(carSpeed);
     setLightsColor(COLOR_WHITE,COLOR_BLUE);
   }
   else if (state == 'I') {   // Se o estado recebido for igual a 'G', o carro se movimenta para Frente Direita.
     setCarDirection(DIRECTION_RIGHT);
-    setCarSpeed(vel_motor_traseiro);
+    setCarSpeed(carSpeed);
     setLightsColor(COLOR_BLUE,COLOR_WHITE);
   }
   else if (state == 'B') { // Se o estado recebido for igual a 'B', o carro se movimenta para trás.
     setCarDirection(DIRECTION_CENTER);
-    setCarSpeed(-vel_motor_traseiro);
+    setCarSpeed(-carSpeed);
     setLightsColor(COLOR_RED,COLOR_RED);
   }
   else if (state == 'H') {  // Se o estado recebido for igual a 'H', o carro se movimenta para Trás Esquerda.
     setCarDirection(DIRECTION_LEFT);
-    setCarSpeed(-vel_motor_traseiro);
+    setCarSpeed(-carSpeed);
     setLightsColor(COLOR_WHITE,COLOR_RED);
   }
   else if (state == 'J') {  // Se o estado recebido for igual a 'J', o carro se movimenta para Trás Direita.
     setCarDirection(DIRECTION_RIGHT);
-    setCarSpeed(-vel_motor_traseiro);
+    setCarSpeed(-carSpeed);
     setLightsColor(COLOR_RED,COLOR_WHITE);
   }
   else if (state == 'L') {   // Se o estado recebido for igual a 'L', o carro se movimenta para esquerda.
@@ -208,19 +199,19 @@ void setCarSpeed(const int speed)
   {
     digitalWrite(IN3,1);
     digitalWrite(IN4,0);
-    digitalWrite(PIN_SPEED_MOTOR_BACK,speed);
+    analogWrite(PIN_SPEED_MOTOR_BACK,speed);
   }
   else if(speed < 0)
   {
     digitalWrite(IN3,0);
     digitalWrite(IN4,1);
-    digitalWrite(PIN_SPEED_MOTOR_BACK,-speed);
+    analogWrite(PIN_SPEED_MOTOR_BACK,-speed);
   }
   else
   {
     digitalWrite(IN3,0);
     digitalWrite(IN4,0);
-    digitalWrite(PIN_SPEED_MOTOR_BACK,0);
+    analogWrite(PIN_SPEED_MOTOR_BACK,0);
   }
 }
 
@@ -234,7 +225,7 @@ void setCarDirection(CarDirection direction){
     {
       digitalWrite(IN1,1);
       digitalWrite(IN2,0);
-      digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
+      analogWrite(PIN_SPEED_DIRECTION,SPEED_MOTOR_DIRECTION);
       break;
     }
 
@@ -242,7 +233,7 @@ void setCarDirection(CarDirection direction){
     {
       digitalWrite(IN1,0);
       digitalWrite(IN2,1);
-      digitalWrite(PIN_SPEED_DIRECTION,vel_motor_direcional * Fator_correcao_Dir);
+      analogWrite(PIN_SPEED_DIRECTION,SPEED_MOTOR_DIRECTION);
       break;
     }
     
@@ -251,7 +242,7 @@ void setCarDirection(CarDirection direction){
     {
       digitalWrite(IN1,0);
       digitalWrite(IN2,0);
-      digitalWrite(PIN_SPEED_DIRECTION,0);
+      analogWrite(PIN_SPEED_DIRECTION,0);
       break;
     }
   }
