@@ -8,23 +8,25 @@
 #include "Arduino.h"
 #include <Adafruit_NeoPixel.h>
 
+#include "MusicTokyoDrift.h"
+
 /**
  * Define todas as portas usadas dentro de um enum para previnir nomes duplicados
  * para a mesma porta
  */
 enum ArduinoPins: int
 {
-  PIN_LEDSTRIP = A0,
+  PIN_LEDSTRIP = A0,             // Pino fita de LED Endereçavel
   PIN_LIGHT_FRONT = 8,
   PIN_LIGHT_BACK = 7,
   PIN_LIGHT_ALERT = 2,
-  PIN_BUZZ = 13,
-  PIN_MOTOR_TURN_1 = 3,
-  PIN_MOTOR_TURN_2 = 5,
-  PIN_SPEED_MOTOR_TURN = 10,
-  PIN_MOTOR_BACK_1 = 6,
-  PIN_MOTOR_BACK_2 = 9,
-  PIN_SPEED_MOTOR_BACK = 11
+  PIN_BUZZ = 12,                 // Pino Buzzer
+  PIN_MOTOR_TURN_1 = 3,          // Pino IN1 Ponte H - Motor da Frente
+  PIN_MOTOR_TURN_2 = 5,          // Pino IN2 Ponte H - Motor da Frente
+  PIN_SPEED_MOTOR_TURN = 10,     // Pino ENA Ponte H - Motor da frente
+  PIN_MOTOR_BACK_1 = 6,          // Pino IN3 Ponte H - Motor de Trás
+  PIN_MOTOR_BACK_2 = 9,          // Pino IN4 Ponte H - Motor de Trás
+  PIN_SPEED_MOTOR_BACK = 11      // Pino ENB Ponte H - Motor da Trás
 };
 
 const unsigned int NUM_LEDS = 2;
@@ -93,7 +95,10 @@ enum CarBTCommands: char {
   CMD_BUZZ_OFF = 'v'
 };
 
-
+enum CarSoundMode: int8_t{
+  CAR_SOUND_MUTE = 0,
+  CAR_SOUND_MUSIC = 1
+};
 
 void setup() {
   // Inicializa a comunicação serial em 9600 bits.
@@ -115,6 +120,7 @@ void setup() {
 void loop() {
   static int carSpeed = MAX_SPEED_MOTOR_BACK;
   static CarBTCommands state = CMD_STOP;
+  static CarSoundMode soundMode = CAR_SOUND_MUTE;
 
   // Atribui os valores da leitura serial na variável "state"
   if (Serial.available() > 0) {
@@ -256,6 +262,19 @@ void loop() {
       setLightsColor(COLOR_OFF,COLOR_OFF);
       break;
     }
+    /*
+      Controle Buzzer
+     */
+    case CMD_BUZZ_ON:
+    {
+      soundMode = CAR_SOUND_MUSIC;
+      break;
+    }
+    case CMD_BUZZ_OFF:
+    {
+      soundMode = CAR_SOUND_MUTE;
+      break;
+    }
 
     /*
       Aqui temos alguns comandos extras do aplicativo
@@ -266,11 +285,27 @@ void loop() {
     case CMD_BACK_LIGHT_OFF:
     case CMD_ALERT_LIGHT_ON:
     case CMD_ALERT_LIGHT_OFF:
-    case CMD_BUZZ_ON:
-    case CMD_BUZZ_OFF:
     default:
     {
       // Comandos não usados por hora
+      break;
+    }
+  }
+
+  /**
+   * Controle Sons
+   */
+  switch (soundMode)
+  {
+    case CAR_SOUND_MUSIC:
+    {
+      playMusic();
+      break;
+    }
+    case CAR_SOUND_MUTE:
+    default:
+    {
+      noTone(PIN_BUZZ);
       break;
     }
   }
@@ -344,4 +379,25 @@ void setLightsColor(const uint32_t color_left, const uint32_t color_right)
   pixels.setPixelColor(LED_LEFT, color_left);
   pixels.setPixelColor(LED_RIGHT, color_right);
   pixels.show();
-} 
+}
+
+/**
+ * Toca música
+ */
+void playMusic()
+{
+  static int note = 0;
+  static unsigned long previousMillis = 0;
+  const int size = sizeof(durations) / sizeof(int) -1;
+
+  const unsigned long currentMillis = millis();
+  if(durations[note] <= (currentMillis - previousMillis))
+  {
+    previousMillis = currentMillis; // Reinicia timer
+
+    const int duration = 1000 / durations[note];
+    tone(PIN_BUZZ, melody[note], duration);
+
+    note = (note < size)? note++:0;
+  }
+}
