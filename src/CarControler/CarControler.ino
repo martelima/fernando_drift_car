@@ -10,6 +10,8 @@
 
 #include "MusicTokyoDrift.h"
 
+#define DEBUG true
+
 /**
  * Define todas as portas usadas dentro de um enum para previnir nomes duplicados
  * para a mesma porta
@@ -100,6 +102,9 @@ enum CarSoundMode: int8_t{
   CAR_SOUND_MUSIC = 1
 };
 
+int note = 0;
+unsigned long previousMillis = 0;
+
 void setup() {
   // Inicializa a comunicação serial em 9600 bits.
   Serial.begin(9600);
@@ -125,7 +130,6 @@ void loop() {
   // Atribui os valores da leitura serial na variável "state"
   if (Serial.available() > 0) {
     state = Serial.read();
-    Serial.println((char) state);
   }
 
   switch(state)
@@ -309,6 +313,16 @@ void loop() {
       break;
     }
   }
+
+  #if DEBUG == true
+    Serial.print((char) state);
+    Serial.print(",");
+    Serial.print(carSpeed);
+    Serial.print(",");
+    Serial.print(soundMode);
+    Serial.print(",");
+    Serial.println(note);
+  #endif
 }
 
 
@@ -371,14 +385,14 @@ void setCarDirection(CarDirection direction){
 }
 
 /**
- * Controla as luzes em baixo do carro
+ * Controla as luzes embaixo do carro
  */
 void setLightsColor(const uint32_t color_left, const uint32_t color_right)
 {
-  pixels.clear();  // Set all pixel colors to 'off'
+  pixels.clear();  // Apaga luzes
   pixels.setPixelColor(LED_LEFT, color_left);
   pixels.setPixelColor(LED_RIGHT, color_right);
-  pixels.show();
+  pixels.show();   // Acende na cor definida
 }
 
 /**
@@ -386,18 +400,25 @@ void setLightsColor(const uint32_t color_left, const uint32_t color_right)
  */
 void playMusic()
 {
-  static int note = 0;
-  static unsigned long previousMillis = 0;
   const int size = sizeof(durations) / sizeof(int) -1;
 
   const unsigned long currentMillis = millis();
-  if(durations[note] <= (currentMillis - previousMillis))
+  const int duration = 1000 / durations[note];
+
+  if(duration <= (currentMillis - previousMillis))
   {
     previousMillis = currentMillis; // Reinicia timer
 
-    const int duration = 1000 / durations[note];
     tone(PIN_BUZZ, melody[note], duration);
 
-    note = (note < size)? note++:0;
+    // Muda para proxima nota
+    if(note < size)
+    {
+      note ++;
+    }
+    else
+    {
+      note = 0;
+    }
   }
 }
