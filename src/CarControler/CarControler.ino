@@ -10,7 +10,7 @@
 
 #include "MusicTokyoDrift.h"
 
-#define DEBUG true
+#define DEBUG false
 
 /**
  * Define todas as portas usadas dentro de um enum para previnir nomes duplicados
@@ -101,9 +101,6 @@ enum CarSoundMode: int8_t{
   CAR_SOUND_MUTE = 0,
   CAR_SOUND_MUSIC = 1
 };
-
-int note = 0;
-unsigned long previousMillis = 0;
 
 void setup() {
   // Inicializa a comunicação serial em 9600 bits.
@@ -400,19 +397,19 @@ void setLightsColor(const uint32_t color_left, const uint32_t color_right)
  */
 void playMusic()
 {
-  const int size = sizeof(durations) / sizeof(int) -1;
-
+  static int note = 0;
+  static unsigned long previousMillis = 0;
   const unsigned long currentMillis = millis();
-  const int duration = 1000 / durations[note];
+  const int duration = 950 / MusicDurations[note];
 
   if(duration <= (currentMillis - previousMillis))
   {
     previousMillis = currentMillis; // Reinicia timer
 
-    tone(PIN_BUZZ, melody[note], duration);
+    tone(PIN_BUZZ, MusicMelody[note], duration);
 
     // Muda para proxima nota
-    if(note < size)
+    if(note < MusicSize)
     {
       note ++;
     }

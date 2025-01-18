@@ -4,7 +4,7 @@
 
 #include "pitches.h"
 
-int melody[] = {
+const int MusicMelody[] = {
   NOTE_AS4, REST,
   NOTE_AS4, REST,
   NOTE_AS4, REST,
@@ -28,7 +28,7 @@ int melody[] = {
   REST
 };
 
-int durations[] = {
+const int MusicDurations[] = {
   4, 4, 4, 4, 4, 4, 4, 4,
   3, 3, 4,
   4, 4, 4, 4,
@@ -49,3 +49,4 @@ int durations[] = {
   1
 };
 
+const int MusicSize = sizeof(MusicDurations) / sizeof(int) -1;
