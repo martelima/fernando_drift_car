@@ -301,7 +301,7 @@ void loop() {
   /**
    * Controle Sons
    */
-  switch (soundMode)
+  switch(soundMode)
   {
     case CAR_SOUND_MUSIC:
     {
@@ -335,15 +335,15 @@ void setCarSpeed(const int speed)
 {
   if(speed > 0)
   {
-    digitalWrite(PIN_MOTOR_BACK_1,1);
+    analogWrite(PIN_MOTOR_BACK_1,speed);
     digitalWrite(PIN_MOTOR_BACK_2,0);
-    analogWrite(PIN_SPEED_MOTOR_BACK,speed);
+    digitalWrite(PIN_SPEED_MOTOR_BACK,HIGH);
   }
   else if(speed < 0)
   {
     digitalWrite(PIN_MOTOR_BACK_1,0);
-    digitalWrite(PIN_MOTOR_BACK_2,1);
-    analogWrite(PIN_SPEED_MOTOR_BACK,-speed);
+    analogWrite(PIN_MOTOR_BACK_2,-speed);
+    digitalWrite(PIN_SPEED_MOTOR_BACK,HIGH);
   }
   else
   {
