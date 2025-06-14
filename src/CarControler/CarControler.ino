@@ -102,6 +102,9 @@ enum CarSoundMode: int8_t{
   CAR_SOUND_MUSIC = 1
 };
 
+int note = 0;
+unsigned long previousMillis = 0;
+ 
 void setup() {
   // Inicializa a comunicação serial em 9600 bits.
   Serial.begin(9600);
@@ -263,6 +266,7 @@ void loop() {
       setLightsColor(COLOR_OFF,COLOR_OFF);
       break;
     }
+ 
     /*
       Controle Buzzer
      */
@@ -274,6 +278,7 @@ void loop() {
     case CMD_BUZZ_OFF:
     {
       soundMode = CAR_SOUND_MUTE;
+      setLightsColor(COLOR_OFF,COLOR_OFF);
       break;
     }
 
@@ -392,30 +397,55 @@ void setLightsColor(const uint32_t color_left, const uint32_t color_right)
   pixels.show();   // Acende na cor definida
 }
 
+
+const uint32_t getMelodyToneColor(const int melodyTone)
+{
+   uint32_t color = COLOR_OFF;
+   switch(melodyTone)
+   {
+      case NOTE_AS4:
+         color = pixels.Color(236,95,59);
+         break;
+      case NOTE_B4:
+         color = pixels.Color(20,157,186);
+         break;
+      case NOTE_DS5:
+         color = pixels.Color(61,17,107);
+         break;
+      case NOTE_F5:
+         color = pixels.Color(255,252,255);
+         break;
+       case REST:
+      default:
+         color = COLOR_OFF;
+   }
+
+   return color;
+}
+
 /**
  * Toca música
  */
 void playMusic()
 {
-  static int note = 0;
-  static unsigned long previousMillis = 0;
+  const int size = sizeof(MusicDurations) / sizeof(int) -1;
+  
+  const int noteDuration = 1000 / MusicDurations[note];
   const unsigned long currentMillis = millis();
-  const int duration = 950 / MusicDurations[note];
-
-  if(duration <= (currentMillis - previousMillis))
+ 
+  if(noteDuration <= (currentMillis - previousMillis))
   {
     previousMillis = currentMillis; // Reinicia timer
 
+    // Toca melodia
+    const int duration = 1000 / MusicDurations[note];
     tone(PIN_BUZZ, MusicMelody[note], duration);
+    
+    // Efeito de luzes no ritmo da música 
+    const uint32_t toneColor = getMelodyToneColor(MusicMelody[note]);
+    setLightsColor(toneColor,toneColor);
 
-    // Muda para proxima nota
-    if(note < MusicSize)
-    {
-      note ++;
-    }
-    else
-    {
-      note = 0;
-    }
+    // Seleciona próxima nota
+    note = (note < size)? note+1:0;
   }
 }
