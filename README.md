@@ -12,6 +12,8 @@ Código para controle de carrinho RC pela serial ( ou bluetooth ).
 
 ### Hardware
 
+![RC CAR](./docs/img/2024-12-31_CarOpen.jpg)
+
  - 2x [Motor DC]()
  - 1x [Arduino Uno](https://www.arduino.cc/en/Main/ArduinoBoardUno)
  - 1x [Ponte H]()
@@ -19,6 +21,7 @@ Código para controle de carrinho RC pela serial ( ou bluetooth ).
  - Fios
 
 ### Ligações
+
 | Arduino | Ponte H | Motor |
 | :---:   | :---:   | :---: |
 | 3       | IN1     |MA     |
@@ -27,3 +30,8 @@ Código para controle de carrinho RC pela serial ( ou bluetooth ).
 | 9       | IN4     |MB     |
 | 10      | ENA     |MA     |
 | 11      | ENB     |MB     |
+
+
+## Referências
+
+* https://nicolasbesson.github.io/BlueRCCar/: Aplicativo Android e código original
