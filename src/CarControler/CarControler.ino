@@ -312,6 +312,7 @@ void loop() {
     default:
     {
       noTone(PIN_BUZZ);
+      note = 0;
       break;
     }
   }
